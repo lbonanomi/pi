@@ -27,9 +27,9 @@ class handler(BaseHTTPRequestHandler):
 	#	        if y['node']['login'] == 'lbonanomi':
 	#		        mutuals.append(x['login'])
 
-        random_mutual = 'https://github.com/' + random.choice(mutuals)
+	random_mutual = 'https://github.com/' + random.choice(mutuals)
         
-        self.send_response(302)
-        self.send_header('Location',random_mutual)
-        self.end_headers()
-        return
+	self.send_response(302)
+	self.send_header('Location',random_mutual)
+	self.end_headers()
+	return
