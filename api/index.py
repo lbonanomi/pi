@@ -11,7 +11,10 @@ class handler(BaseHTTPRequestHandler):
         #token_value = os.environ['GITHUB_TOKEN']
 	#plain_user = HTTPBasicAuth('', token_value)
 
-        mutuals = [ 'xiaoliu', 'mertaytore', 'yostx038' ]
+        ##mutuals = [ 'xiaoliu', 'mertaytore', 'yostx038' ]
+
+	with open("users.txt") as users:
+		mutuals = users.readlines()
 
         #payload = { "query": "query { user(login: \"lbonanomi\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
 
