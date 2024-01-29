@@ -5,37 +5,39 @@ import json
 import os
 import random
 
-token_value = os.environ['GITHUB_TOKEN']
-
-payload = { "query": "query { user(login: \"lbonanomi\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
-
-data = json.dumps(payload)
-
-headers = {"Content-type": "application/json", "Authorization": "bearer " + token_value, "User-Agent": "python3"}
 
 
-conn = http.client.HTTPSConnection("api.github.com")
+class handler(BaseHTTPRequestHandler):
+  def do_GET(self):
+        token_value = os.environ['GITHUB_TOKEN']
 
-conn.request('POST', '/graphql', data, headers)
+        payload = { "query": "query { user(login: \"lbonanomi\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
 
-response = conn.getresponse()
+        data = json.dumps(payload)
+
+        headers = {"Content-type": "application/json", "Authorization": "bearer " + token_value, "User-Agent": "python3"}
+
+        conn = http.client.HTTPSConnection("api.github.com")
+
+        conn.request('POST', '/graphql', data, headers)
+
+        response = conn.getresponse()
+
+        a = response.read().decode()
+
+        mutuals = []
+
+        b = json.loads(a)
+
+        for x in b['data']['user']['following']['nodes']:
+                for y in x['following']['edges']:
+                        if y['node']['login'] == 'lbonanomi':
+                                mutuals.append(x['login'])
 
 
-a = response.read().decode()
+        random_mutual = 'https://github.com/' + random.choice(mutuals)
 
-mutuals = []
-
-b = json.loads(a)
-
-for x in b['data']['user']['following']['nodes']:
-        for y in x['following']['edges']:
-                if y['node']['login'] == 'lbonanomi':
-                        mutuals.append(x['login'])
-
-
-random_mutual = 'https://github.com/' + random.choice(mutuals)
-
-self.send_response(302)
-self.send_header('Location',random_mutual)
-self.end_headers()
-return
+        self.send_response(302)
+        self.send_header('Location',random_mutual)
+        self.end_headers()
+        return
