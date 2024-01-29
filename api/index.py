@@ -1,35 +1,41 @@
+from base64 import b64encode
 from http.server import BaseHTTPRequestHandler
+import http.client
 import json
 import os
-#import requests
-#from requests.auth import HTTPBasicAuth
 import random
 
+token_value = os.environ['GITHUB_TOKEN']
 
-class handler(BaseHTTPRequestHandler):
-	def do_GET(self):
-        #token_value = os.environ['GITHUB_TOKEN']
-	#plain_user = HTTPBasicAuth('', token_value)
+payload = { "query": "query { user(login: \"lbonanomi\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
 
-        ##mutuals = [ 'xiaoliu', 'mertaytore', 'yostx038' ]
+data = json.dumps(payload)
 
-		with open("users.txt") as users:
-			mutuals = users.readlines()
+headers = {"Content-type": "application/json", "Authorization": "bearer " + token_value, "User-Agent": "python3"}
 
-        #payload = { "query": "query { user(login: \"lbonanomi\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
 
-        #data=json.dumps(payload)
+conn = http.client.HTTPSConnection("api.github.com")
 
-        #graphql = requests.post("https://api.github.com/graphql", data=data, auth=plain_user)
+conn.request('POST', '/graphql', data, headers)
 
-        #for x in graphql.json()['data']['user']['following']['nodes']:
-	#        for y in x['following']['edges']:
-	#	        if y['node']['login'] == 'lbonanomi':
-	#		        mutuals.append(x['login'])
+response = conn.getresponse()
 
-		random_mutual = 'https://github.com/' + random.choice(mutuals)
-        
-		self.send_response(302)
-		self.send_header('Location',random_mutual)
-		self.end_headers()
-		return
+
+a = response.read().decode()
+
+mutuals = []
+
+b = json.loads(a)
+
+for x in b['data']['user']['following']['nodes']:
+        for y in x['following']['edges']:
+                if y['node']['login'] == 'lbonanomi':
+                        mutuals.append(x['login'])
+
+
+random_mutual = 'https://github.com/' + random.choice(mutuals)
+
+self.send_response(302)
+self.send_header('Location',random_mutual)
+self.end_headers()
+return
