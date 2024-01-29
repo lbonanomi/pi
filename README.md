@@ -1,1 +1,1 @@
-Fucking Vercel won't allow `import requests`, so we need to build and crunch a list locally.
+Fun-aside, this is how to live with the batteries-incluced HTTP library for REST POSTs
