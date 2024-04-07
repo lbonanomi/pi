@@ -1,1 +1,1 @@
-Fun-aside, this is how to live with the batteries-incluced HTTP library for REST POSTs
+A fun exercise for me in how to deal with python's batteries-incluced HTTP library for REST POSTs
