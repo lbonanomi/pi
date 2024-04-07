@@ -1,1 +1,1 @@
-A fun exercise for me in how to deal with python's batteries-incluced HTTP library for REST POSTs
+A fun exercise with python's batteries-incluced HTTP library and a pleasant nostalgia 
