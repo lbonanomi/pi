@@ -19,9 +19,8 @@ class handler(BaseHTTPRequestHandler):
         whoami = conn.getresponse().read().decode()
         callme = json.loads(whoami)['login']
 
-        callme = "lbonanomi"
-
-        payload = { "query": "query { user(login: \"" + callme + "\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
+        #payload = { "query": "query { user(login: \"" + callme + "\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
+        payload = { "query": "query { user(login: \"lbonanomi\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
 
         data = json.dumps(payload)
 
