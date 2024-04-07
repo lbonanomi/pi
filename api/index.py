@@ -11,13 +11,20 @@ class handler(BaseHTTPRequestHandler):
   def do_GET(self):
         token_value = os.environ['GITHUB_TOKEN']
 
-        payload = { "query": "query { user(login: \"lbonanomi\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
-
-        data = json.dumps(payload)
-
         headers = {"Content-type": "application/json", "Authorization": "bearer " + token_value, "User-Agent": "python3"}
 
         conn = http.client.HTTPSConnection("api.github.com")
+        conn.request('GET', '/user', headers)
+
+        whoami = conn.getresponse().read().decode()
+        username = json.loads(whoami)['login']
+
+        payload = { "query": "query { user(login: \"" + username + "\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
+
+        data = json.dumps(payload)
+
+        #headers = {"Content-type": "application/json", "Authorization": "bearer " + token_value, "User-Agent": "python3"}
+        #conn = http.client.HTTPSConnection("api.github.com")
 
         conn.request('POST', '/graphql', data, headers)
 
