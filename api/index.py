@@ -14,13 +14,13 @@ class handler(BaseHTTPRequestHandler):
         headers = {"Content-type": "application/json", "Authorization": "bearer " + token_value, "User-Agent": "python3"}
 
         conn = http.client.HTTPSConnection("api.github.com")
-        conn.request('GET', '/user', headers)
+        conn.request('GET', '/user', headers=headers)
 
         whoami = conn.getresponse().read().decode()
         callme = json.loads(whoami)['login']
 
-        #payload = { "query": "query { user(login: \"" + callme + "\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
-        payload = { "query": "query { user(login: \"lbonanomi\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
+        payload = { "query": "query { user(login: \"" + callme + "\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
+        #payload = { "query": "query { user(login: \"lbonanomi\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
 
         data = json.dumps(payload)
 
