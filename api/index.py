@@ -22,7 +22,7 @@ class handler(BaseHTTPRequestHandler):
       callme = json.loads(whoami_resp)['login']
     except Exception:
 
-      print("FLAG 0")
+      print("TOKEN:", token)
       
       self.send_response(502)
       self.send_header('Content-type','text/plain')
