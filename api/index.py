@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 
 class handler(BaseHTTPRequestHandler):
 
-  def redis_config():
+  def redis_config(self):
     redis_uri = os.environ['KV_URL']
     redis_config = urlparse(redis_uri)
 
