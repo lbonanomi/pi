@@ -21,7 +21,7 @@ class handler(BaseHTTPRequestHandler):
       callme = json.loads(whoami_resp)['login']
     except Exception as e:
 
-      print("TOKEN:", token, "ERROR:", e, "WUT", json.loads(whoami_resp))
+      print("TOKEN:", token[6:], "ERROR:", e, "WUT", json.loads(whoami_resp))
       
       self.send_response(502)
       self.send_header('Content-type','text/plain')
@@ -80,8 +80,8 @@ class handler(BaseHTTPRequestHandler):
     # into the variable "callme"
     token_value = os.environ['GITHUB_TOKEN']
 
-    #callme = self.whoami(token_value)
-    self.whoami("BARIUM")
+    callme = self.whoami(token_value)
+    #self.whoami("BARIUM")
 
     print("CALLER:", callme)
 
