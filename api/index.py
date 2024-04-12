@@ -21,12 +21,12 @@ class handler(BaseHTTPRequestHandler):
       callme = json.loads(whoami_resp)['login']
     except Exception as e:
 
-      print("TOKEN:", token, "ERROR:", e)
+      print("TOKEN:", token, "ERROR:", e, "WUT", json.loads(whoami_resp))
       
       self.send_response(502)
       self.send_header('Content-type','text/plain')
       self.end_headers()
-      self.wfile.write('Could not determine calling-user.'.encode('utf-8'))
+      self.wfile.write("Could not determine calling-user\n".encode('utf-8'))
       return
       
     return callme
