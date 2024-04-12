@@ -10,7 +10,6 @@ from urllib.parse import urlparse
 
 class handler(BaseHTTPRequestHandler):
   def whoami(self, token):
-
     
     headers = {"Content-type": "application/json", "Authorization": "bearer " + token, "User-Agent": "python3"}
 
@@ -20,9 +19,9 @@ class handler(BaseHTTPRequestHandler):
 
       whoami_resp = conn.getresponse().read().decode()
       callme = json.loads(whoami_resp)['login']
-    except Exception:
+    except Exception as e:
 
-      print("TOKEN:", token)
+      print("TOKEN:", token, "ERROR:", e)
       
       self.send_response(502)
       self.send_header('Content-type','text/plain')
