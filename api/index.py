@@ -9,6 +9,23 @@ from urllib.parse import urlparse
 
 
 class handler(BaseHTTPRequestHandler):
+
+  def redis_config():
+    redis_uri = os.environ['KV_URL']
+    redis_config = urlparse(redis_uri)
+
+    r = redis.Redis(
+      host=redis_config.hostname, 
+      port=redis_config.port,
+      username=redis_config.username, 
+      password=redis_config.password,
+      decode_responses=True,
+      ssl=True
+    )
+    
+  return(r)
+
+  
   def whoami(self, token):
     
     headers = {"Content-type": "application/json", "Authorization": "bearer " + token, "User-Agent": "python3"}
@@ -19,9 +36,7 @@ class handler(BaseHTTPRequestHandler):
 
       whoami_resp = conn.getresponse().read().decode()
       callme = json.loads(whoami_resp)['login']
-    except Exception as e:
-      #print("TOKEN:", token[6:], "ERROR:", e, "WUT", json.loads(whoami_resp))
-      
+    except Exception as e:      
       self.send_response(502)
       self.send_header('Content-type','text/plain')
       self.end_headers()
@@ -29,20 +44,22 @@ class handler(BaseHTTPRequestHandler):
       return
       
     return callme
-    
+
+
   def find_comrades(self, token, redis_config, callme):
     headers = {"Content-type": "application/json", "Authorization": "bearer " + token, "User-Agent": "python3"}
     
     mutuals = []
 
-    r = redis.Redis(
-      host=redis_config.hostname, 
-      port=redis_config.port,
-      username=redis_config.username, 
-      password=redis_config.password,
-      decode_responses=True,
-      ssl=True
-    )
+    r = redis_config()
+    #r = redis.Redis(
+    #  host=redis_config.hostname, 
+    #  port=redis_config.port,
+    #  username=redis_config.username, 
+    #  password=redis_config.password,
+    #  decode_responses=True,
+    #  ssl=True
+    #)
     
     payload = { "query": "query { user(login: \"" + callme + "\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
 
@@ -60,29 +77,29 @@ class handler(BaseHTTPRequestHandler):
     for x in b['data']['user']['following']['nodes']:
       for y in x['following']['edges']:
         if y['node']['login'] == callme:
-          mutuals.append(x['login'])
           r.sadd("mutuals", x['login'])
 
 
   def do_PUT(self):
-    try:
-      redis_uri = os.environ['KV_URL']
-      redis_config = urlparse(redis_uri)
-    except Exception:
-      self.send_response(501)
-      self.send_header('Content-type','text/plain')
-      self.end_headers()
-      self.wfile.write('Could not find Redis.'.encode('utf-8'))
-      return
-    
-    r = redis.Redis(
-      host=redis_config.hostname, 
-      port=redis_config.port,
-      username=redis_config.username, 
-      password=redis_config.password,
-      decode_responses=True,
-      ssl=True
-    )
+    #try:
+    #  redis_uri = os.environ['KV_URL']
+    #  redis_config = urlparse(redis_uri)
+    #except Exception:
+    #  self.send_response(501)
+    #  self.send_header('Content-type','text/plain')
+    #  self.end_headers()
+    #  self.wfile.write('Could not find Redis.'.encode('utf-8'))
+    #  return
+
+    #r = redis_config()
+    #r = redis.Redis(
+    #  host=redis_config.hostname, 
+    #  port=redis_config.port,
+    #  username=redis_config.username, 
+    #  password=redis_config.password,
+    #  decode_responses=True,
+    #  ssl=True
+    #)
 
     # Get username of whoever registered the GH token with Vercel
     # into the variable "callme"
@@ -93,18 +110,19 @@ class handler(BaseHTTPRequestHandler):
 
   
   def do_GET(self):
+    #redis_uri = os.environ['KV_URL']
+    #redis_config = urlparse(redis_uri)
 
-    redis_uri = os.environ['KV_URL']
-    redis_config = urlparse(redis_uri)
+    r = redis_config()
     
-    r = redis.Redis(
-      host=redis_config.hostname, 
-      port=redis_config.port,
-      username=redis_config.username, 
-      password=redis_config.password,
-      decode_responses=True,
-      ssl=True
-    )
+    #r = redis.Redis(
+    #  host=redis_config.hostname, 
+    #  port=redis_config.port,
+    #  username=redis_config.username, 
+    #  password=redis_config.password,
+    #  decode_responses=True,
+    #  ssl=True
+    #)
 
     random_mutual = 'https://github.com/' + r.srandmember("mutuals")
 
