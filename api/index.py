@@ -30,7 +30,7 @@ class handler(BaseHTTPRequestHandler):
       
     return callme
     
-  def find_comrades(self, token, callme):
+  def find_comrades(self, token, redis_config, callme):
     headers = {"Content-type": "application/json", "Authorization": "bearer " + token, "User-Agent": "python3"}
     
     mutuals = []
@@ -89,11 +89,7 @@ class handler(BaseHTTPRequestHandler):
     token_value = os.environ['GITHUB_TOKEN']
 
     callme = self.whoami(token_value)
-    #self.whoami("BARIUM")
-
-    print("CALLER:", callme)
-
-    comrades = self.find_comrades(token_value, callme)    
+    comrades = self.find_comrades(token_value, redis_config, callme)    
 
   
   def do_GET(self):
