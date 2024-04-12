@@ -19,6 +19,9 @@ class handler(BaseHTTPRequestHandler):
       whoami = conn.getresponse().read().decode()
       callme = json.loads(whoami)['login']
     except Exception:
+
+      print("FLAG 0")
+      
       self.send_response(502)
       self.send_header('Content-type','text/plain')
       self.end_headers()
