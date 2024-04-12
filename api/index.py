@@ -28,6 +28,8 @@ class handler(BaseHTTPRequestHandler):
     return callme
     
   def find_comrades(token, callme):
+    headers = {"Content-type": "application/json", "Authorization": "bearer " + token_value, "User-Agent": "python3"}
+    
     mutuals = []
     
     payload = { "query": "query { user(login: \"" + callme + "\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
@@ -52,7 +54,7 @@ class handler(BaseHTTPRequestHandler):
       redis_uri = os.environ['KV_URL']
       redis_config = urlparse(redis_uri)
     except Exception:
-      self.send_response(500)
+      self.send_response(501)
       self.send_header('Content-type','text/plain')
       self.end_headers()
       self.wfile.write('Could not find Redis.'.encode('utf-8'))
@@ -72,6 +74,8 @@ class handler(BaseHTTPRequestHandler):
     token_value = os.environ['GITHUB_TOKEN']
 
     callme = whoami(token_value)
+
+    print("CALLER:", callme)
 
     comrades = find_comrades(token_value, callme)    
 
