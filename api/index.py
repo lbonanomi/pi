@@ -14,8 +14,8 @@ class handler(BaseHTTPRequestHandler):
         headers = {"Content-type": "application/json", "Authorization": "bearer " + token_value, "User-Agent": "python3"}
 
         conn = http.client.HTTPSConnection("api.github.com")
-        conn.request('GET', '/user', headers=headers)
-
+#        conn.request('GET', '/user', headers=headers)
+#
 #        try:
 #          whoami = conn.getresponse().read().decode()
 #          callme = json.loads(whoami)['login']
