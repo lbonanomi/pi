@@ -39,6 +39,8 @@ class handler(BaseHTTPRequestHandler):
 
     data = json.dumps(payload)
 
+    conn = http.client.HTTPSConnection("api.github.com")
+    
     conn.request('POST', '/graphql', data, headers)
 
     response = conn.getresponse()
