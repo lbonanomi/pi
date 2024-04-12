@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 
 class handler(BaseHTTPRequestHandler):
   def whoami(self, token):
-    headers = {"Content-type": "application/json", "Authorization": "bearer " + token_value, "User-Agent": "python3"}
+    headers = {"Content-type": "application/json", "Authorization": "bearer " + token, "User-Agent": "python3"}
 
     try:
       conn = http.client.HTTPSConnection("api.github.com")
@@ -31,7 +31,7 @@ class handler(BaseHTTPRequestHandler):
     return callme
     
   def find_comrades(token, callme):
-    headers = {"Content-type": "application/json", "Authorization": "bearer " + token_value, "User-Agent": "python3"}
+    headers = {"Content-type": "application/json", "Authorization": "bearer " + token, "User-Agent": "python3"}
     
     mutuals = []
     
