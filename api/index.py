@@ -10,6 +10,8 @@ from urllib.parse import urlparse
 
 class handler(BaseHTTPRequestHandler):
   def whoami(self, token):
+
+    
     headers = {"Content-type": "application/json", "Authorization": "bearer " + token, "User-Agent": "python3"}
 
     try:
@@ -79,7 +81,8 @@ class handler(BaseHTTPRequestHandler):
     # into the variable "callme"
     token_value = os.environ['GITHUB_TOKEN']
 
-    callme = self.whoami(token_value)
+    #callme = self.whoami(token_value)
+    self.whoami("BARIUM")
 
     print("CALLER:", callme)
 
