@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 
 class handler(BaseHTTPRequestHandler):
-  def whoami(token):
+  def whoami(self, token):
     headers = {"Content-type": "application/json", "Authorization": "bearer " + token_value, "User-Agent": "python3"}
 
     try:
