@@ -51,7 +51,7 @@ class handler(BaseHTTPRequestHandler):
     
     mutuals = []
 
-    r = redis_config()
+    r = self.redis_config()
     #r = redis.Redis(
     #  host=redis_config.hostname, 
     #  port=redis_config.port,
@@ -113,7 +113,7 @@ class handler(BaseHTTPRequestHandler):
     #redis_uri = os.environ['KV_URL']
     #redis_config = urlparse(redis_uri)
 
-    r = redis_config()
+    r = self.redis_config()
     
     #r = redis.Redis(
     #  host=redis_config.hostname, 
