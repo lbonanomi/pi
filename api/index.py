@@ -52,14 +52,6 @@ class handler(BaseHTTPRequestHandler):
     mutuals = []
 
     r = self.redis_config()
-    #r = redis.Redis(
-    #  host=redis_config.hostname, 
-    #  port=redis_config.port,
-    #  username=redis_config.username, 
-    #  password=redis_config.password,
-    #  decode_responses=True,
-    #  ssl=True
-    #)
     
     payload = { "query": "query { user(login: \"" + callme + "\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
 
@@ -81,26 +73,6 @@ class handler(BaseHTTPRequestHandler):
 
 
   def do_PUT(self):
-    #try:
-    #  redis_uri = os.environ['KV_URL']
-    #  redis_config = urlparse(redis_uri)
-    #except Exception:
-    #  self.send_response(501)
-    #  self.send_header('Content-type','text/plain')
-    #  self.end_headers()
-    #  self.wfile.write('Could not find Redis.'.encode('utf-8'))
-    #  return
-
-    #r = redis_config()
-    #r = redis.Redis(
-    #  host=redis_config.hostname, 
-    #  port=redis_config.port,
-    #  username=redis_config.username, 
-    #  password=redis_config.password,
-    #  decode_responses=True,
-    #  ssl=True
-    #)
-
     # Get username of whoever registered the GH token with Vercel
     # into the variable "callme"
     token_value = os.environ['GITHUB_TOKEN']
@@ -110,20 +82,8 @@ class handler(BaseHTTPRequestHandler):
 
   
   def do_GET(self):
-    #redis_uri = os.environ['KV_URL']
-    #redis_config = urlparse(redis_uri)
-
     r = self.redis_config()
     
-    #r = redis.Redis(
-    #  host=redis_config.hostname, 
-    #  port=redis_config.port,
-    #  username=redis_config.username, 
-    #  password=redis_config.password,
-    #  decode_responses=True,
-    #  ssl=True
-    #)
-
     random_mutual = 'https://github.com/' + r.srandmember("mutuals")
 
     self.send_response(302)
