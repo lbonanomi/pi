@@ -16,8 +16,8 @@ class handler(BaseHTTPRequestHandler):
       conn = http.client.HTTPSConnection("api.github.com")
       conn.request('GET', '/user', headers=headers)
 
-      whoami = conn.getresponse().read().decode()
-      callme = json.loads(whoami)['login']
+      whoami_resp = conn.getresponse().read().decode()
+      callme = json.loads(whoami_resp)['login']
     except Exception:
 
       print("FLAG 0")
