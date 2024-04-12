@@ -30,7 +30,7 @@ class handler(BaseHTTPRequestHandler):
       
     return callme
     
-  def find_comrades(token, callme):
+  def find_comrades(self, token, callme):
     headers = {"Content-type": "application/json", "Authorization": "bearer " + token, "User-Agent": "python3"}
     
     mutuals = []
