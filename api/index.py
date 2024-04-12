@@ -9,37 +9,26 @@ from urllib.parse import urlparse
 
 
 class handler(BaseHTTPRequestHandler):
-  def do_PUT(self):    
-
-    redis_uri = os.environ['KV_URL']
-    redis_config = urlparse(redis_uri)
-    
-    r = redis.Redis(
-      host=redis_config.hostname, 
-      port=redis_config.port,
-      username=redis_config.username, 
-      password=redis_config.password,
-      ssl=True
-    )
-    
-    token_value = os.environ['GITHUB_TOKEN']
-
+  def whoami(token):
     headers = {"Content-type": "application/json", "Authorization": "bearer " + token_value, "User-Agent": "python3"}
 
-    conn = http.client.HTTPSConnection("api.github.com")
-    conn.request('GET', '/user', headers=headers)
-
     try:
+      conn = http.client.HTTPSConnection("api.github.com")
+      conn.request('GET', '/user', headers=headers)
+
       whoami = conn.getresponse().read().decode()
       callme = json.loads(whoami)['login']
-    except KeyError:
-      # Author routinely runs out of GH tokens,
-      # so handle that
-      self.send_response(302)
-      self.send_header('Location', 'https://www.sonypictures.com/movies/thenet')
+    except Exception:
+      self.send_response(500)
+      self.send_header('Content-type','text/plain')
       self.end_headers()
-      return
-          
+      self.wfile.write('Could not determine calling-user.'.encode('utf-8'))
+      
+    return callme
+    
+  def find_comrades(token, callme):
+    mutuals = []
+    
     payload = { "query": "query { user(login: \"" + callme + "\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
 
     data = json.dumps(payload)
@@ -49,9 +38,6 @@ class handler(BaseHTTPRequestHandler):
     response = conn.getresponse()
 
     a = response.read().decode()
-
-    mutuals = []
-
     b = json.loads(a)
 
     for x in b['data']['user']['following']['nodes']:
@@ -59,9 +45,45 @@ class handler(BaseHTTPRequestHandler):
         if y['node']['login'] == callme:
           mutuals.append(x['login'])
 
-
-        random_mutual = 'https://github.com/' + random.choice(mutuals)
     
+  def do_PUT(self):
+    try:
+      redis_uri = os.environ['KV_URL']
+      redis_config = urlparse(redis_uri)
+    except Exception:
+      return
+    
+    r = redis.Redis(
+      host=redis_config.hostname, 
+      port=redis_config.port,
+      username=redis_config.username, 
+      password=redis_config.password,
+      decode_responses=True,
+      ssl=True
+    )
+
+    # Get username of whoever registered the GH token with Vercel
+    # into the variable "callme"
+    token_value = os.environ['GITHUB_TOKEN']
+
+    callme = whoami(token_value)
+
+    comrades = find_comrades(token_value, callme)    
+    
+    
+    try:
+      whoami = conn.getresponse().read().decode()
+      callme = json.loads(whoami)['login']
+      
+    except KeyError:
+      # Author routinely runs out of GH tokens,
+      # so handle that
+      self.send_response(302)
+      self.send_header('Location', 'https://www.sonypictures.com/movies/thenet')
+      self.end_headers()
+      return
+
+  
   def do_GET(self):
 
     redis_uri = os.environ['KV_URL']
@@ -76,7 +98,7 @@ class handler(BaseHTTPRequestHandler):
       ssl=True
     )
 
-    random_mutual = r.srandmember("mutuals")
+    random_mutual = 'https://github.com/' + r.srandmember("mutuals")
 
     self.send_response(302)
     self.send_header('Location',random_mutual)
