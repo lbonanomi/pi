@@ -23,7 +23,7 @@ class handler(BaseHTTPRequestHandler):
       ssl=True
     )
     
-  return(r)
+    return(r)
 
   
   def whoami(self, token):
