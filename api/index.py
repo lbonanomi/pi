@@ -19,7 +19,7 @@ class handler(BaseHTTPRequestHandler):
       whoami = conn.getresponse().read().decode()
       callme = json.loads(whoami)['login']
     except Exception:
-      self.send_response(500)
+      self.send_response(502)
       self.send_header('Content-type','text/plain')
       self.end_headers()
       self.wfile.write('Could not determine calling-user.'.encode('utf-8'))
@@ -47,8 +47,9 @@ class handler(BaseHTTPRequestHandler):
       for y in x['following']['edges']:
         if y['node']['login'] == callme:
           mutuals.append(x['login'])
+          r.sadd("mutuals", x['login'])
 
-    
+
   def do_PUT(self):
     try:
       redis_uri = os.environ['KV_URL']
