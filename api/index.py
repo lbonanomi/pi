@@ -16,9 +16,17 @@ class handler(BaseHTTPRequestHandler):
         conn = http.client.HTTPSConnection("api.github.com")
         conn.request('GET', '/user', headers=headers)
 
-        whoami = conn.getresponse().read().decode()
-        callme = json.loads(whoami)['login']
-
+        try:
+          whoami = conn.getresponse().read().decode()
+          callme = json.loads(whoami)['login']
+        except KeyError:
+          # Author routinely runs out of GH tokens,
+          # so handle that
+          self.send_response(302)
+          self.send_header('Location', 'https://www.sonypictures.com/movies/thenet')
+          self.end_headers()
+          return
+          
         payload = { "query": "query { user(login: \"" + callme + "\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
 
         data = json.dumps(payload)
