@@ -23,6 +23,7 @@ class handler(BaseHTTPRequestHandler):
       self.send_header('Content-type','text/plain')
       self.end_headers()
       self.wfile.write('Could not determine calling-user.'.encode('utf-8'))
+      return
       
     return callme
     
@@ -51,6 +52,10 @@ class handler(BaseHTTPRequestHandler):
       redis_uri = os.environ['KV_URL']
       redis_config = urlparse(redis_uri)
     except Exception:
+      self.send_response(500)
+      self.send_header('Content-type','text/plain')
+      self.end_headers()
+      self.wfile.write('Could not find Redis.'.encode('utf-8'))
       return
     
     r = redis.Redis(
@@ -69,19 +74,6 @@ class handler(BaseHTTPRequestHandler):
     callme = whoami(token_value)
 
     comrades = find_comrades(token_value, callme)    
-    
-    
-    try:
-      whoami = conn.getresponse().read().decode()
-      callme = json.loads(whoami)['login']
-      
-    except KeyError:
-      # Author routinely runs out of GH tokens,
-      # so handle that
-      self.send_response(302)
-      self.send_header('Location', 'https://www.sonypictures.com/movies/thenet')
-      self.end_headers()
-      return
 
   
   def do_GET(self):
