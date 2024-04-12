@@ -77,11 +77,11 @@ class handler(BaseHTTPRequestHandler):
     # into the variable "callme"
     token_value = os.environ['GITHUB_TOKEN']
 
-    callme = whoami(token_value)
+    callme = self.whoami(token_value)
 
     print("CALLER:", callme)
 
-    comrades = find_comrades(token_value, callme)    
+    comrades = self.find_comrades(token_value, callme)    
 
   
   def do_GET(self):
