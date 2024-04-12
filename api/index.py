@@ -20,8 +20,7 @@ class handler(BaseHTTPRequestHandler):
       whoami_resp = conn.getresponse().read().decode()
       callme = json.loads(whoami_resp)['login']
     except Exception as e:
-
-      print("TOKEN:", token[6:], "ERROR:", e, "WUT", json.loads(whoami_resp))
+      #print("TOKEN:", token[6:], "ERROR:", e, "WUT", json.loads(whoami_resp))
       
       self.send_response(502)
       self.send_header('Content-type','text/plain')
@@ -35,6 +34,15 @@ class handler(BaseHTTPRequestHandler):
     headers = {"Content-type": "application/json", "Authorization": "bearer " + token, "User-Agent": "python3"}
     
     mutuals = []
+
+    r = redis.Redis(
+      host=redis_config.hostname, 
+      port=redis_config.port,
+      username=redis_config.username, 
+      password=redis_config.password,
+      decode_responses=True,
+      ssl=True
+    )
     
     payload = { "query": "query { user(login: \"" + callme + "\") { following(first:100) { nodes { login following(first: 100) { edges { node { login }}}}}}}" }
 
