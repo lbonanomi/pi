@@ -77,7 +77,10 @@ class handler(BaseHTTPRequestHandler):
     # into the variable "callme"
     token_value = os.environ['GITHUB_TOKEN']
 
+    redis_config = self.redis_config()
+
     callme = self.whoami(token_value)
+
     comrades = self.find_comrades(token_value, redis_config, callme)    
 
   
