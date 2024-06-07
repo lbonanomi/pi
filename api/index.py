@@ -81,8 +81,11 @@ class handler(BaseHTTPRequestHandler):
 
     callme = self.whoami(token_value)
 
-    comrades = self.find_comrades(token_value, redis_config, callme)    
+    comrades = self.find_comrades(token_value, redis_config, callme)
 
+    self.send_response(204)
+    self.end_headers()
+    
   
   def do_GET(self):
     r = self.redis_config()
